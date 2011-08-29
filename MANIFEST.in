@@ -1,0 +1,9 @@
+include *.py
+include *.vel
+include LICENSE
+include NOTES
+recursive-include examples *.py *.g
+recursive-include manual *.tex *.png Makefile
+recursive-include bin
+recursive-include zapps
+recursive-include scripts

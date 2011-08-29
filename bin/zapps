@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+
+# Yapps 2.0 - yet another python parser system
+# Amit J Patel, January 1999
+# See http://theory.stanford.edu/~amitp/Yapps/ for documentation and updates
+
+# v2.0.1 changes (October 2001):
+# * The exceptions inherit the standard Exception class (thanks Rich Salz)
+# * The scanner can use either a different set of regular expressions
+#   per instance, or allows the subclass to define class fields with
+#   the patterns.  This improves performance when many Scanner objects
+#   are being created, because the regular expressions don't have to
+#   be recompiled each time. (thanks Amaury Forgeot d'Arc)
+# v2.0.2 changes (April 2002)
+# * Bug fix: generating the 'else' clause when the comment was too
+#   long.  v2.0.1 was missing a newline.  (thanks Steven Engelhardt)
+# v2.0.3 changes (August 2002)
+# * Bug fix: inline tokens using the r"" syntax.
+# v.2.0.4 changes (July 2003)
+# * Style change: Replaced `expr` with repr(expr)
+# * Style change: Changed (b >= a and b < c) into (a <= b < c)
+# * Bug fix: identifiers in grammar rules that had digits in them were
+#   not accessible in the {{python code}} section
+# * Bug fix: made the SyntaxError exception class call
+#   Exception.__init__ (thanks Alex Verstak)
+# * Style change: replaced raise "string exception" with raise
+#   ClassException(...) (thanks Alex Verstak)
+
+import sys
+from zapps.parser import *
+
+if __name__=='__main__':
+    import sys, getopt
+    optlist, args = getopt.getopt(sys.argv[1:], 'f:', ['dump'])
+    if not args or len(args) > 2:
+        print 'Usage:'
+        print '  python', sys.argv[0], '[flags] input.g [output.py]'
+        print 'Flags:'
+        print ('  --dump' + ' '*40)[:35] + 'Dump out grammar information'
+        for flag, _, doc in yapps_options:
+            print ('  -f' + flag + ' '*40)[:35] + doc
+    else:
+        # Read in the options and create a list of flags
+	flags = {}
+	for opt in optlist:
+	    for flag, name, _ in yapps_options:
+		if opt == ('-f', flag):
+		    flags[name] = 1
+		    break
+	    else:
+                if opt == ('--dump', ''):
+                    flags['dump'] = 1
+		else:
+                    print 'Warning - unrecognized option:  ', opt[0], opt[1]
+
+        apply(generate, tuple(args), flags)
